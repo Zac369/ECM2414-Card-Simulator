@@ -7,8 +7,6 @@ public class Pack{
     List<Integer> pack = new ArrayList<>();
     public boolean validatePack(int numberOfPlayers, String filePath) {
 
-
-
         try {
             //the file to be opened for reading
             FileInputStream fis = new FileInputStream(filePath);
@@ -43,50 +41,29 @@ public class Pack{
 
         return false;
     }
-}
 
-/*
-import java.io.FileReader;
+    public void distributePack(Player[] playerList, CardDeck[] cardDeckList){
+        int size = playerList.length;
 
-
-public class FileReaderExample {
-
-    public static void main(String[] args) throws Exception {
-
-        FileReader fileReader = new FileReader("C:\\Users\\Desktop\\test.txt");
-
-        int i;
-
-        while ((i = fileReader.read()) != -1)
-            System.out.print((char) i);
-    }
-
-
-
-
-
-import java.io.*;
-import java.util.Scanner;
-public class ReadLineByLineExample2
-{
-    public static void main(String args[])
-    {
-        try
-        {
-            //the file to be opened for reading
-            FileInputStream fis=new FileInputStream("Demo.txt");
-            Scanner sc=new Scanner(fis);    //file to be scanned
-            //returns true if there is another line to read
-            while(sc.hasNextLine())
-            {
-                list.add(toInt((sc.nextLine()));      //returns the line that was skipped
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < size; j++) {
+                playerList[j].deck.add(pack.get(j+i*4));
             }
-            sc.close();     //closes the scanner
         }
-        catch(IOException e)
-        {
-            e.printStackTrace();
+        for (int i = 4; i < 8; i++) {
+            for (int j = 0; j < size; j++) {
+                cardDeckList[j].deck.add(pack.get(j+i*4));
+            }
         }
+        for (int i = 0; i < size; i++) {
+            System.out.println(playerList[i].deck.toString());
+            System.out.println(cardDeckList[i].deck.toString());
+        }
+
+
+
+
+
+
     }
 }
-}*/

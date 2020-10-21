@@ -1,17 +1,20 @@
-import java.util.Random;
-
 public class Player extends CardDeck {
-    Random r = new Random();
-    int preferredDenomination = r.nextInt(8);
+    Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+
+                System.out.println("Hello, I'm Player " + index + " and here is my hand" + deck.toString());
+            try {
+                thread.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
 
+        }
+    });
 
-
-
-
-
-
-
+    int index;
 
 
 
