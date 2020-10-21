@@ -8,9 +8,9 @@ public class CardDeck {
 
 /*
     public synchronized void discard(int cardIndex, CardDeck destinationDeck){
-        int discardedCard = deck.get(cardIndex);
-        deck.remove(cardIndex);
-        destinationDeck.deck.addLast(discardedCard);
+        int discardedCard = pack.get(cardIndex);
+        pack.remove(cardIndex);
+        destinationDeck.pack.addLast(discardedCard);
         notify();
 
     }
@@ -20,9 +20,9 @@ public class CardDeck {
     // Function called by consumer thread
     public synchronized void consume() throws InterruptedException {
         for (int i = 0; i < 20; ) {
-            if (!deck.isEmpty()) {
-                deck.remove();
-                System.out.println(deck.toString());
+            if (!pack.isEmpty()) {
+                pack.remove();
+                System.out.println(pack.toString());
                 i++;
                 notify();
             } else {
