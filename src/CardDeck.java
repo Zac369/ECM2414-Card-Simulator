@@ -3,7 +3,7 @@ import java.util.LinkedList;
 public class CardDeck {
     //Reusing materials from W3 CW.
     LinkedList<Integer> deck = new LinkedList<>();
-    int capacity = 4;
+    int decksize = 4;
     // Function called by producer thread
 
 /*
