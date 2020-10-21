@@ -2,7 +2,21 @@ import java.util.Random;
 
 public class Player extends CardDeck {
     Random r = new Random();
-    int preferredDenomination = r.nextInt(13);
+    int preferredDenomination = r.nextInt(8);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @param cardIndex       0 <= int < 4
