@@ -11,23 +11,22 @@ public class CardGame {
 
         test.validatePack(numberOfPlayers, filePath);
 
-
-        Player[] playerList = new Player[numberOfPlayers];
-        for (int i = 0; i < numberOfPlayers; i++) {
-            playerList[i] = new Player();
-            playerList[i].index = i+1;
-        }
-
         CardDeck[] cardDeckList = new CardDeck[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
             cardDeckList[i] = new CardDeck();
         }
 
+        Player[] playerList = new Player[numberOfPlayers];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            playerList[i] = new Player(playerList, cardDeckList, i);;
+        }
+
+
         test.distributePack(playerList, cardDeckList);
 
         for (int i = 0; i < numberOfPlayers; i++) {
             playerList[i].thread.start();
-           // playerList[i].thread.join();
+            playerList[i].thread.join();
 
         }
 
