@@ -1,3 +1,4 @@
+import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +7,7 @@ import java.util.Scanner;
 public class Pack{
     List<Integer> pack = new ArrayList<>();
     public boolean validatePack(int numberOfPlayers, String filePath) {
+        pack.clear();
 
         try {
             //the file to be opened for reading
@@ -15,8 +17,13 @@ public class Pack{
             while (sc.hasNextLine()) {
                 String cardValue = sc.nextLine();
                 try {
+                    int newCard = Integer.parseInt(cardValue);
+                    if (newCard < 0) {
+                        System.out.printf("Card \" %s\" should be a positive integer.%n", newCard);
+                        return false;
 
-                    pack.add(Integer.parseInt(cardValue));      //returns the line that was skipped
+                    }
+                    pack.add(newCard);      //returns the line that was skipped
 
                 } catch (NumberFormatException e) {
                     System.out.printf("Invalid format. The value: \"%s\" should be an integer.%n", cardValue);
