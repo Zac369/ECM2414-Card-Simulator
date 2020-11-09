@@ -4,7 +4,8 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class CardGame {
-    public static java.lang.Number lock = 0;
+    public static Object lock = new Object();
+    public static int turn = 0;
 
     public static void main(String[] args) throws InterruptedException {
         int numberOfPlayers = 4;
@@ -64,7 +65,7 @@ public class CardGame {
 
         }
         synchronized (lock){
-            lock.notify();
+            lock.notifyAll();
         }
         System.out.println("plop");
 

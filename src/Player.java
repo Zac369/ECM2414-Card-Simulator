@@ -9,62 +9,39 @@ public class Player extends CardDeck {
         @Override
         public void run() {
 
-
                 writeToFile(playerOutputPathName, "Player " + playerID + " initial hand " + deck.toString() + "\n");
                 notIndexCards = (LinkedList) deck.clone();
                 while (notIndexCards.contains(playerID)) {
                     notIndexCards.removeFirstOccurrence(playerID);
                 }
-            while (!isVictory()) {
+                while (true) {
+
+                    System.out.println(CardGame.turn);
                     synchronized (CardGame.lock) {
-
-
-                    System.out.println(Integer.parseInt(CardGame.lock.toString()));
-                    while (Integer.parseInt(CardGame.lock.toString()) != index){
-                        try {
-                            CardGame.lock.wait(500);
-                            System.out.println("waiting"+ playerID);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        while (CardGame.turn != index) {
+                            try {
+                                CardGame.lock.wait();
+                            } catch (Exception e) {//
+                            }
                         }
-                    }
-                    //Strategy
+                        //Strategy
+                        System.out.println("next index: " + nextIndex);
 
-                    drawAndDiscard(cardDeckList[index], notIndexCards.peekLast(), cardDeckList[nextIndex]);
-                    //if drawn card is not the player's preferred denomination (i.e. their playerID), then add it to notIndexCards
-                    if (deck.getFirst() != playerID) {
-                        notIndexCards.add(deck.getFirst());
-                    }
-                    //System.out.println("Player "+ playerID + "'s cards to be discarded are " +notIndexCards.toString() +
-                    //"\nPlayer "+ playerID + "'s current hand is " +deck.toString());
-                    CardGame.lock = nextIndex;
-                        try {
-                            CardGame.lock.wait(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        drawAndDiscard(cardDeckList[index], notIndexCards.peekLast(), cardDeckList[nextIndex]);
+                        //if drawn card is not the player's preferred denomination (i.e. their playerID), then add it to notIndexCards
+                        if (deck.getFirst() != playerID) {
+                            notIndexCards.add(deck.getFirst());
                         }
-                    /*try {
-                        thread.sleep(500);*//*try {
-                            CardGame.lock.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }*//*
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+
+                        CardGame.turn = nextIndex;
+                        CardGame.lock.notifyAll();
                     }
-*/
 
-                }
 
-                //Victory is achieved
+                    //Victory is achieved
                 //Do all the things that break the game
-                writeToFile(deckOutputPathName, "Deck " + playerID + " content: " + cardDeckList[playerID].deck.toString());
+                writeToFile(deckOutputPathName, "Deck " + playerID + " content: " + cardDeckList[nextIndex].deck.toString());
                 System.out.println("Hello, I'm Player " + playerID + " and here is my hand" + deck.toString());
-
-/*            try {
-                thread.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace(); }*/
 
             }}
     });
@@ -106,7 +83,7 @@ public class Player extends CardDeck {
      * @param cardValue       Value of the card you wish to discard
      * @param destinationDeck Deck you want to discard to
      */
-    public synchronized void drawAndDiscard(CardDeck sourceDeck, int cardValue, CardDeck destinationDeck) {
+    public void drawAndDiscard(CardDeck sourceDeck, int cardValue, CardDeck destinationDeck) {
         int cardAdded = sourceDeck.deck.poll();
         notIndexCards.removeFirstOccurrence(cardValue);
         deck.removeFirstOccurrence(cardValue);
@@ -122,7 +99,7 @@ public class Player extends CardDeck {
     }
 
 
-    public synchronized boolean isVictory() {
+    public boolean isVictory() {
         return notIndexCards.size() == 0;
     }
 
