@@ -4,9 +4,12 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class CardGame {
+    public static Object lock = new Object();
+    public static int turn = 0;
+
     public static void main(String[] args) throws InterruptedException {
         int numberOfPlayers = 4;
-        String filePath = "C:\\Users\\willi\\IdeaProjects\\ECM2414Coursework\\src\\pack.txt";
+        String filePath = "src/pack.txt";
 
         Scanner scanner = new Scanner(System.in);
         /*
@@ -58,9 +61,14 @@ public class CardGame {
 
         for (int i = 0; i < numberOfPlayers; i++) {
             playerList[i].thread.start();
-            playerList[i].thread.join();
+            //playerList[i].thread.join();
 
         }
+        synchronized (lock){
+            lock.notifyAll();
+        }
+        System.out.println("plop");
+
 
     }
 }

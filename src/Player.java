@@ -2,49 +2,48 @@ import java.util.LinkedList;
 import java.io.File;  // Import the File class
 import java.io.IOException;  // Import the IOException class to handle errors
 import java.io.FileWriter;
+import java.text.MessageFormat;
 
 public class Player extends CardDeck {
     Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-            writeToFile(playerOutputPathName, "Player " + playerID + " initial hand " + deck.toString() + "\n");
-            notIndexCards = (LinkedList) deck.clone();
-            while (notIndexCards.contains(playerID)) {
-                notIndexCards.removeFirstOccurrence(playerID);
-            }
-            while (!isVictory()) {
-                //Strategy
 
-                drawAndDiscard(cardDeckList[index], notIndexCards.peekLast(), cardDeckList[nextIndex]);
-                //if drawn card is not the player's preferred denomination (i.e. their playerID), then add it to notIndexCards
-                if (deck.getFirst() != playerID) {
-                    notIndexCards.add(deck.getFirst());
+                writeToFile(playerOutputPathName, "Player " + playerID + " initial hand " + deck.toString() + "\n");
+                notIndexCards = (LinkedList) deck.clone();
+                while (notIndexCards.contains(playerID)) {
+                    notIndexCards.removeFirstOccurrence(playerID);
                 }
-                //System.out.println("Player "+ playerID + "'s cards to be discarded are " +notIndexCards.toString() +
-                //"\nPlayer "+ playerID + "'s current hand is " +deck.toString());
+                while (true) {
+
+                    System.out.println(CardGame.turn);
+                    synchronized (CardGame.lock) {
+                        while (CardGame.turn != index) {
+                            try {
+                                CardGame.lock.wait();
+                            } catch (Exception e) {//
+                            }
+                        }
+                        //Strategy
+                        System.out.println("next index: " + nextIndex);
+
+                        drawAndDiscard(cardDeckList[index], notIndexCards.peekLast(), cardDeckList[nextIndex]);
+                        //if drawn card is not the player's preferred denomination (i.e. their playerID), then add it to notIndexCards
+                        if (deck.getFirst() != playerID) {
+                            notIndexCards.add(deck.getFirst());
+                        }
+
+                        CardGame.turn = nextIndex;
+                        CardGame.lock.notifyAll();
+                    }
 
 
-                //thread.notify();
-                /*try {
-                    thread.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
+                    //Victory is achieved
+                //Do all the things that break the game
+                writeToFile(deckOutputPathName, "Deck " + playerID + " content: " + cardDeckList[nextIndex].deck.toString());
+                System.out.println("Hello, I'm Player " + playerID + " and here is my hand" + deck.toString());
 
-            }
-
-            //Victory is achieved
-            //Do all the things that break the game
-            writeToFile(deckOutputPathName, "Deck " +playerID+" content: "+cardDeckList[playerID].deck.toString());
-            System.out.println("Hello, I'm Player " + playerID + " and here is my hand" + deck.toString());
-
-/*            try {
-                thread.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace(); }*/
-
-
-        }
+            }}
     });
 
     int playerID;
@@ -84,19 +83,23 @@ public class Player extends CardDeck {
      * @param cardValue       Value of the card you wish to discard
      * @param destinationDeck Deck you want to discard to
      */
-    public synchronized void drawAndDiscard(CardDeck sourceDeck, int cardValue, CardDeck destinationDeck) {
+    public void drawAndDiscard(CardDeck sourceDeck, int cardValue, CardDeck destinationDeck) {
         int cardAdded = sourceDeck.deck.poll();
         notIndexCards.removeFirstOccurrence(cardValue);
         deck.removeFirstOccurrence(cardValue);
         deck.addFirst(cardAdded);
         destinationDeck.deck.addLast(cardValue);
-        writeToFile(playerOutputPathName, "Player " + playerID + " draws a " + cardAdded + " from deck " + (index + 1) +
-                "\nPlayer " + playerID + " discards a " + cardValue + " to deck " + (nextIndex + 1) +
-                "\nPlayer " + playerID + "'s current hand is " + deck.toString() + "\n");
+        String content = MessageFormat.format(
+                "Player {0} draws a {1} from deck {2}\n" +
+                        "Player {3} discards a {4} to deck {5}\n" +
+                        "Player {6}''s current hand is {7}\n",
+                playerID, cardAdded, index + 1, playerID, cardValue, nextIndex + 1, playerID, deck.toString());
+        writeToFile(playerOutputPathName, content);
+        System.out.println(content);
     }
 
 
-    public synchronized boolean isVictory() {
+    public boolean isVictory() {
         return notIndexCards.size() == 0;
     }
 
