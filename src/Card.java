@@ -1,21 +1,20 @@
-import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Pack{
+public class Card {
     List<Integer> pack = new ArrayList<>();
     public boolean validatePack(int numberOfPlayers, String filePath) {
         pack.clear();
 
         try {
             //the file to be opened for reading
-            FileInputStream fis = new FileInputStream(filePath);
-            Scanner sc = new Scanner(fis);    //file to be scanned
+            FileInputStream cardPackFile = new FileInputStream(filePath);
+            Scanner scanner = new Scanner(cardPackFile);
             //returns true if there is another line to read
-            while (sc.hasNextLine()) {
-                String cardValue = sc.nextLine();
+            while (scanner.hasNextLine()) {
+                String cardValue = scanner.nextLine();
                 try {
                     int newCard = Integer.parseInt(cardValue);
                     if (newCard < 0) {
@@ -30,10 +29,10 @@ public class Pack{
                     return false;
                 }
             }
-            sc.close();     //closes the scanner
+            scanner.close();
 
             if (pack.size() == 8 * numberOfPlayers) {
-                System.out.println(pack.toString());
+                //System.out.println(pack.toString()); // for testing purposes
                 return true;
             } else {
                 System.out.printf("The number of cards is: %d. The expected number of cards is %s.%n", pack.size(), numberOfPlayers * 8);
@@ -51,26 +50,18 @@ public class Pack{
 
     public void distributePack(Player[] playerList, CardDeck[] cardDeckList){
         int size = playerList.length;
-
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < size; j++) {
-                playerList[j].deck.add(pack.get(j+i*4));
+        // Hands out cards to Players
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < size; j++) {
+                    playerList[j].deck.add(pack.get(j+i*4));
+                }
             }
-        }
-        for (int i = 4; i < 8; i++) {
-            for (int j = 0; j < size; j++) {
-                cardDeckList[j].deck.add(pack.get(j+i*4));
+        // Hands out cards to Decks
+            for (int i = 4; i < 8; i++) {
+                for (int j = 0; j < size; j++) {
+                    cardDeckList[j].deck.add(pack.get(j+i*4));
+                }
             }
-        }
-        for (int i = 0; i < size; i++) {
-            System.out.println(playerList[i].deck.toString());
-            System.out.println(cardDeckList[i].deck.toString());
-        }
-
-
-
-
-
 
     }
 }
