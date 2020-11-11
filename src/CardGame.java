@@ -4,7 +4,7 @@ public class CardGame {
     public final static Object lock = new Object();
     public static int turn = 0;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         /*int numberOfPlayers = 4;
         String filePath = "src/pack.txt";*/
 
@@ -43,7 +43,7 @@ public class CardGame {
             }
             Player[] playerList = new Player[numberOfPlayers];
             for (int i = 0; i < numberOfPlayers; i++) {
-                playerList[i] = new Player(playerList, cardDeckList, i);;
+                playerList[i] = new Player(playerList, cardDeckList, i);
             }
 
         // Distributes Cards, starts Player threads
