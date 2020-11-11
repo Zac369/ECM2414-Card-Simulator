@@ -9,7 +9,7 @@ public class CardGame {
 
     public static void main(String[] args) throws InterruptedException {
         int numberOfPlayers = 4;
-        String filePath = "src/pack.txt";
+        String filePath = "src/pack2.txt";
 
         Scanner scanner = new Scanner(System.in);
         /*

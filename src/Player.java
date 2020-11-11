@@ -4,58 +4,64 @@ import java.io.File;  // Import the File class
 import java.io.IOException;  // Import the IOException class to handle errors
 import java.io.FileWriter;
 import java.text.MessageFormat;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Player extends CardDeck {
-    Victory victory = new Victory();
     Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-
-            writeToFile(playerOutputPathName, MessageFormat.format("Player {0}'s initial hand {1}\n", playerID, deck.toString()));
+            writeToFile(playerOutputPathName, MessageFormat.format("Player {0}''s initial hand {1} \n", playerID, deck.toString()));
             notIndexCards = (LinkedList) deck.clone();
             while (notIndexCards.contains(playerID)) {
                 notIndexCards.removeFirstOccurrence(playerID);
             }
-            while (!isVictory() && CardGame.turn !=-1) {
+            synchronized (CardGame.lock) {
+                while (CardGame.turn != index && CardGame.turn >= 0) {
+                    try {
+                        CardGame.lock.wait();
+                    } catch (Exception e) {//
+                    }
+                }
+            while (!isVictory() && CardGame.turn >= 0) {
+
                 System.out.println(CardGame.turn);
-                synchronized (CardGame.lock) {
-                    while (CardGame.turn != index) {
+               // synchronized (CardGame.lock) {
+                    while (CardGame.turn != index && CardGame.turn >= 0) {
                         try {
                             CardGame.lock.wait();
                         } catch (Exception e) {//
                         }
                     }
+                    if (CardGame.turn < 0) {
+                        break;
+                    }
                     //Strategy
-                    if (!finalTurn) {
-                        drawAndDiscard(cardDeckList[index], notIndexCards.peekLast(), cardDeckList[nextIndex]);
-                        //if drawn card is not the player's preferred denomination (i.e. their playerID), then add it to notIndexCards
-                        if (deck.getFirst() != playerID) {
-                            notIndexCards.add(deck.getFirst());
-                            System.out.println(MessageFormat.format("I want to discard {0}", notIndexCards.toString()));
-                        }
-                    } else {
-                        System.out.println("Player: " + playerID + " this is my final turn, winner: " + winner);
 
+                    drawAndDiscard(cardDeckList[index], notIndexCards.peekLast(), cardDeckList[nextIndex]);
+                    //if drawn card is not the player's preferred denomination (i.e. their playerID), then add it to notIndexCards
+                    if (deck.getFirst() != playerID) {
+                        notIndexCards.add(deck.getFirst());
+                        System.out.println(MessageFormat.format("I want to discard {0}", notIndexCards.toString()));
                     }
 
+
                     //isVictory();
-                    System.out.println("F: " + finalTurn);
+                    //System.out.println("F: " + finalTurn);
                     CardGame.turn = nextIndex;
                     CardGame.lock.notifyAll();
 
-                    /*if (isVictory()) {
+                    if (isVictory()) {
                         break;
-                    };*/
+                    };
                 }
             }
-            if (CardGame.turn == -1) {
+            if (CardGame.turn < 0 && CardGame.turn != -playerID) {
                 String content = MessageFormat.format(
-                        "Player {0} has informed Player {1} that player {0} has won" +
+                        "Player {0} has informed Player {1} that player {0} has won\n" +
                                 "Player {1} exits\n" +
                                 "Player {1} hand is {2}\n",
-                        victory.getWinner(), playerID, deck.toString());
+                        (-CardGame.turn), playerID, deck.toString());
                 System.out.println(content);
+                writeToFile(playerOutputPathName, content);
             }
             System.out.println("player " + playerID);
         }
@@ -69,8 +75,6 @@ public class Player extends CardDeck {
     CardDeck[] cardDeckList;
     String playerOutputPathName;
     String deckOutputPathName;
-    volatile static int winner;
-    volatile static boolean finalTurn;
 
     /**
      * Player constructor, helps establish the indexes of players and decks
@@ -92,8 +96,6 @@ public class Player extends CardDeck {
         deckOutputPathName = MessageFormat.format("Deck{0}_output.txt", playerID);
         createFile(playerOutputPathName);
         createFile(deckOutputPathName);
-        finalTurn = false;
-        winner = 0;
     }
 
 
@@ -120,16 +122,14 @@ public class Player extends CardDeck {
 
     public boolean isVictory() {
         if (new HashSet<>(deck).size() <= 1) {
-            //CardGame.turn =-1;
+            CardGame.turn = -playerID;
             //finalTurn = true;
-            finalTurn = true;
             String content = MessageFormat.format(
                     "Player {0} wins\n" +
                             "Player {0} exits\n" +
                             "Player {0}''s final hand is {1}\n",
                     playerID, deck.toString());
             writeToFile(playerOutputPathName, content);
-            winner = playerID;
             //Victory is achieved
             //Do all the things that break the game
 
@@ -137,6 +137,7 @@ public class Player extends CardDeck {
             writeToFile(deckOutputPathName, MessageFormat.format("Deck {0} content: {1}\n", playerID, cardDeckList[nextIndex].deck.toString()));
             System.out.println(MessageFormat.format("Hello, I''m Player {0} and here is my hand{1}", playerID, deck.toString()));
             //TODO
+            CardGame.lock.notifyAll();
             return true;
         } else return false;
     }
