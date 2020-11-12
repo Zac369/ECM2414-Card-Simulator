@@ -5,7 +5,9 @@ A game simulation, where n Players aim to end up with 4 of the same cards.
 This version of CardGame was compiled using openJDK14.
 The executable can be run using the normal java command.
 
-`java ./CardGame`
+From the jar file : `java -jar ./070351_021484.jar`
+
+From bytecode : `java ./CardGame`
 
 Please then follow console instructions.
 

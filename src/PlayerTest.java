@@ -1,3 +1,5 @@
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
@@ -10,13 +12,24 @@ class PlayerTest {
     void tearDown() {
     }
 
-    @org.junit.jupiter.api.Test
-    void drawAndDiscard() {CardDeck deck1 = new CardDeck();
-        CardDeck deck2 = new CardDeck();
-
-    }
 
     @org.junit.jupiter.api.Test
     void isVictory() {
+    }
+
+    @Test
+    void testDrawAndDiscard() {
+    }
+
+    @Test
+    void testIsVictory() {
+    }
+
+    @Test
+    void drawAndDiscard() {
+    }
+
+    @Test
+    void testIsVictory1() {
     }
 }
