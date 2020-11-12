@@ -21,4 +21,12 @@ class CardDeckTest {
     @Test
     void writeToFile() {
     }
+
+    @Test
+    void testCreateFile() {
+    }
+
+    @Test
+    void testWriteToFile() {
+    }
 }

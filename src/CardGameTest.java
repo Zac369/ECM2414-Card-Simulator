@@ -15,6 +15,12 @@ class CardGameTest {
     }
 
     @Test
+    void validatePlayerNumber() {
+
+
+    }
+
+    @Test
     void main() {
     }
 }

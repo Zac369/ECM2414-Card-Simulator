@@ -10,7 +10,7 @@ public class CardDeck {
     public void createFile(String pathName) {
         try {
             File outputFile = new File(pathName);
-            File logsPath = new File("logs/");
+            File logsPath = new File("./logs");
             logsPath.mkdir();
             if (!outputFile.createNewFile()) {
                 new FileWriter(pathName).close(); // Wipes file if file exists
